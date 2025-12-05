@@ -19,3 +19,33 @@ The other crossbar is uncached and meant to contain the peripherals.
 Because most of these peripherals are imported from OpenTitan, in the first instance this bus is implemented as a TileLink Ultra-Lightweight bus with 32 width.
 
 ![Mocha block diagram](doc/img/mocha.svg)
+
+## Developer guide
+
+### Setup Python virtual environment
+
+```sh
+# Initial setup of environment.
+python -m venv .venv
+# Enter the environment (do this every time).
+source .venv/bin/activate
+# Install dependencies.
+pip install -r python-requirements.txt
+```
+
+### Simulation
+
+```sh
+# Build simulator.
+fusesoc --cores-root=. run --target=sim --tool=verilator --setup --build lowrisc:mocha:top_chip_system
+# Run simulator.
+build/lowrisc_mocha_top_chip_system_0/sim-verilator/Vtop_chip_verilator -t -E sw/device/examples/hello_world/hello_world.elf
+```
+
+### Temporary software flow
+
+```sh
+pushd sw/device/examples/hello_world
+./build.sh
+popd
+```

@@ -14,6 +14,9 @@ module top_chip_verilator (input logic clk_i, rst_ni);
   logic [3:0] qspi_device_sdo_en;
   logic       spi_device_sdi;
 
+  // Rest of chip AXI signals
+  top_pkg::axi_resp_t rest_of_chip_resp;
+
   // CHERI Mocha top
   top_chip_system #(
   ) u_top_chip_system (
@@ -28,8 +31,15 @@ module top_chip_verilator (input logic clk_i, rst_ni);
     .spi_device_sd_o      (qspi_device_sdo),
     .spi_device_sd_en_o   (qspi_device_sdo_en),
     .spi_device_sd_i      ({3'h0, spi_device_sdi}), // SPI MOSI = QSPI DQ0
-    .spi_device_tpm_csb_i ('0)
+    .spi_device_tpm_csb_i ('0),
+
+    // Not using rest of chip
+    .rest_of_chip_req_o  ( ),
+    .rest_of_chip_resp_i (rest_of_chip_resp)
   );
+
+  // Rest of chip AXI tie off
+  assign rest_of_chip_resp = '0;
 
   // Virtual UART
   uartdpi #(

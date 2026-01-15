@@ -19,7 +19,11 @@ module top_chip_system #(
   output logic [3:0] spi_device_sd_o,
   output logic [3:0] spi_device_sd_en_o,
   input  logic [3:0] spi_device_sd_i,
-  input  logic       spi_device_tpm_csb_i
+  input  logic       spi_device_tpm_csb_i,
+
+  // Rest of chip AXI interface.
+  output top_pkg::axi_req_t  rest_of_chip_req_o,
+  input  top_pkg::axi_resp_t rest_of_chip_resp_i
 );
   // Local parameters.
   localparam int unsigned SramMemSize   = 128 * 1024; // 128 KiB
@@ -69,7 +73,8 @@ module top_chip_system #(
   axi_pkg::xbar_rule_64_t [xbar_cfg.NoAddrRules-1:0] addr_map;
   assign addr_map = '{
     '{ idx: top_pkg::SRAM,       start_addr: top_pkg::SRAMBase,       end_addr: top_pkg::SRAMBase       + top_pkg::SRAMLength       },
-    '{ idx: top_pkg::TlCrossbar, start_addr: top_pkg::TlCrossbarBase, end_addr: top_pkg::TlCrossbarBase + top_pkg::TlCrossbarLength }
+    '{ idx: top_pkg::TlCrossbar, start_addr: top_pkg::TlCrossbarBase, end_addr: top_pkg::TlCrossbarBase + top_pkg::TlCrossbarLength },
+    '{ idx: top_pkg::RestOfChip, start_addr: top_pkg::RestOfChipBase, end_addr: top_pkg::RestOfChipBase + top_pkg::RestOfChipLength }
   };
 
   // TileLink signals.
@@ -193,6 +198,10 @@ module top_chip_system #(
     .axi_req_i  (xbar_device_req[top_pkg::SRAM]),
     .axi_resp_o (xbar_device_resp[top_pkg::SRAM])
   );
+
+  // Rest of chip AXI passthrough
+  assign rest_of_chip_req_o                    = xbar_device_req[top_pkg::RestOfChip];
+  assign xbar_device_resp[top_pkg::RestOfChip] = rest_of_chip_resp_i;
 
   // Primary AXI crossbar
   axi_xbar #(

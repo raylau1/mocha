@@ -11,8 +11,16 @@ filesets:
       - lowrisc:prim_xilinx:all
     files:
       - rtl/clkgen_xil7series.sv
+      - rtl/tmds_enc.sv
+      - rtl/video_tx.sv
+      - rtl/axi_frame_buffer.sv
       - rtl/chip_mocha_genesys2.sv
     file_type: systemVerilogSource
+
+  files_tcl:
+    files:
+      - ip/gen_xilinx_ip.tcl
+    file_type: tclSource
 
   files_constraints:
     files:
@@ -32,10 +40,16 @@ parameters:
     description: Boot ROM initialization file in 64 bit vmem hex format
     default: ""
     paramtype: vlogparam
+  LogoRomInitFile:
+    datatype: str
+    description: Logo ROM initialization file in 8 bit vmem hex format
+    default: ""
+    paramtype: vlogparam
 
 targets:
   default: &default_target
     filesets:
+      - files_tcl
       - files_rtl
 
   synth:
@@ -46,6 +60,7 @@ targets:
     toplevel: chip_mocha_genesys2
     parameters:
       - BootRomInitFile
+      - LogoRomInitFile
     tools:
       vivado:
         part: "xc7k325tffg900-2" # Genesys 2 with K325T

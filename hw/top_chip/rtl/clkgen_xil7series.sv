@@ -6,12 +6,16 @@ module clkgen_xil7series (
   input  logic clk_200m_ni,
   input  logic clk_200m_pi,
   output logic pll_locked_o,
-  output logic clk_50m_o
+  output logic clk_50m_o,
+  output logic clk_pix_o,   // Video signal pixel clock
+  output logic clk_tmds_o   // Video signal TMDS SERDES clock
 );
   // Internal signals
   logic clk_200m_buf;
   logic clk_fb_int;
   logic clk_50m_unbuf;
+  logic main_pll_locked;
+  logic video_pll_locked;
 
   // Input buffering
   IBUFDS clk_200m_ibufds_inst(
@@ -69,11 +73,18 @@ module clkgen_xil7series (
     .PSINCDEC            (1'b0),
     .PSDONE              (),
     // Other control and status signals
-    .LOCKED              (pll_locked_o),
+    .LOCKED              (main_pll_locked),
     .CLKINSTOPPED        (),
     .CLKFBSTOPPED        (),
     .PWRDWN              (1'b0),
     .RST                 (1'b0)
+  );
+
+  vid_clk_gen u_vid_clk_gen(
+    .clk_in1(clk_200m_buf),
+    .clk_tmds(clk_tmds_o),
+    .clk_pix(clk_pix_o),
+    .locked(video_pll_locked)
   );
 
   // Output buffering
@@ -81,5 +92,8 @@ module clkgen_xil7series (
     .I(clk_50m_unbuf),
     .O(clk_50m_o)
   );
+
+  // Output lock signal
+  assign pll_locked_o = main_pll_locked & video_pll_locked;
 
 endmodule

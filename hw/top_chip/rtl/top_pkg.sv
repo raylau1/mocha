@@ -15,34 +15,63 @@ package top_pkg;
   localparam int TL_DBW = (TL_DW>>3);
   localparam int TL_SZW = $clog2($clog2(TL_DBW)+1);
 
-  // AXI crossbar parameters
+  // Mocha AXI crossbar parameters
   localparam int AxiXbarHosts   = 1;
-  localparam int AxiXbarDevices = 2;
+  localparam int AxiXbarDevices = 3;
 
-  // AXI crossbar hosts and devices
+  // Mocha AXI crossbar hosts and devices
   typedef enum int unsigned {
     CVA6 = 0
   } axi_hosts_t;
 
   typedef enum int unsigned {
     SRAM       = 0,
-    TlCrossbar = 1
+    TlCrossbar = 1,
+    RestOfChip = 2
   } axi_devices_t;
 
   typedef enum longint unsigned {
     SRAMBase       = 64'h1000_0000,
-    TlCrossbarBase = 64'h4000_0000
+    TlCrossbarBase = 64'h4000_0000,
+    RestOfChipBase = 64'h6000_0000
   } axi_addr_start_t;
 
   typedef enum longint unsigned {
     SRAMLength       = 64'h0002_0000,
-    TlCrossbarLength = 64'h1000_0000
+    TlCrossbarLength = 64'h1000_0000,
+    RestOfChipLength = 64'h0100_0000
   } axi_addr_length_t;
 
   typedef enum longint unsigned {
     SRAMMask       = SRAMLength - 1,
-    TlCrossbarMask = TlCrossbarLength - 1
+    TlCrossbarMask = TlCrossbarLength - 1,
+    RestOfChipMask = RestOfChipLength - 1
   } axi_addr_mask_t;
+
+  // Rest of chip AXI crossbar parameters
+  localparam int RestOfChipAxiXbarHosts   = 1;
+  localparam int RestOfChipAxiXbarDevices = 1;
+
+  // Rest of chip AXI crossbar hosts and devices
+  typedef enum int unsigned {
+    Mocha = 0
+  } rest_of_chip_axi_hosts_t;
+
+  typedef enum int unsigned {
+    FrameBuffer = 0
+  } rest_of_chip_axi_devices_t;
+
+  typedef enum longint unsigned {
+    FrameBufferBase = 64'h6000_0000
+  } rest_of_chip_axi_addr_start_t;
+
+  typedef enum longint unsigned {
+    FrameBufferLength = 64'h0010_0000
+  } rest_of_chip_axi_addr_length_t;
+
+  typedef enum longint unsigned {
+    FrameBufferMask = FrameBufferLength - 1
+  } rest_of_chip_axi_addr_mask_t;
 
   // AXI parameters
   localparam AxiIdWidth   = cva6_config_pkg::CVA6ConfigAxiIdWidth;

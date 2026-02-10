@@ -16,6 +16,7 @@ static const uintptr_t uart_base = 0x41000000ul;
 static const uintptr_t spi_device_base = 0x43000000ul;
 static const uintptr_t timer_base = 0x44000000ul;
 static const uintptr_t plic_base = 0x48000000ul;
+static const uintptr_t frame_buffer_base = 0x60000000ul;
 
 #if defined(__riscv_zcherihybrid)
 /* initialised by boot.S */
@@ -70,6 +71,15 @@ spi_device_t mocha_system_spi_device(void)
     return (spi_device_t)create_mmio_capability(spi_device_base, 0x1FC0u);
 #else /* !defined(__riscv_zcherihybrid) */
     return (spi_device_t)spi_device_base;
+#endif /* defined(__riscv_zcherihybrid) */
+}
+
+frame_buffer_t mocha_system_frame_buffer(void)
+{
+#if defined(__riscv_zcherihybrid)
+    return (frame_buffer_t)create_mmio_capability(frame_buffer_base, 0x100000u);
+#else /* !defined(__riscv_zcherihybrid) */
+    return (frame_buffer_t)frame_buffer_base;
 #endif /* defined(__riscv_zcherihybrid) */
 }
 

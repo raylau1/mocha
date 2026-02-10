@@ -4,6 +4,7 @@
 
 #include "boot/trap.h"
 #include "hal/mocha.h"
+#include "hal/frame_buffer.h"
 #include "hal/spi_device.h"
 #include "hal/timer.h"
 #include "hal/uart.h"
@@ -14,6 +15,7 @@ int main(void)
     uart_t uart = mocha_system_uart();
     timer_t timer = mocha_system_timer();
     spi_device_t spi_device = mocha_system_spi_device();
+    frame_buffer_t frame_buffer = mocha_system_frame_buffer();
     uart_init(uart);
     timer_init(timer);
     spi_device_init(spi_device);
@@ -28,6 +30,72 @@ int main(void)
         timer_busy_sleep(timer, 100);
 
         uart_puts(uart, "timer 100us\n");
+    }
+
+    frame_buffer_write_pixel_565(frame_buffer, 0, 0, 0b11111, 0b111111, 0b11111);
+    frame_buffer_write_pixel_565(frame_buffer, 1, 0, 0b11111, 0b111111, 0b11111);
+    frame_buffer_write_pixel_565(frame_buffer, 2, 0, 0b11111, 0b111111, 0b11111);
+    frame_buffer_write_pixel_565(frame_buffer, 3, 0, 0b11111, 0b111111, 0b11111);
+    frame_buffer_write_pixel_565(frame_buffer, 0, 1, 0b11111, 0b111111, 0b11111);
+    frame_buffer_write_pixel_565(frame_buffer, 1, 1, 0b11111, 0b111111, 0b11111);
+    frame_buffer_write_pixel_565(frame_buffer, 2, 1, 0b11111, 0b111111, 0b11111);
+    frame_buffer_write_pixel_565(frame_buffer, 3, 1, 0b11111, 0b111111, 0b11111);
+    frame_buffer_write_pixel_565(frame_buffer, 0, 2, 0b11111, 0b111111, 0b11111);
+    frame_buffer_write_pixel_565(frame_buffer, 1, 2, 0b11111, 0b111111, 0b11111);
+    frame_buffer_write_pixel_565(frame_buffer, 0, 3, 0b11111, 0b111111, 0b11111);
+    frame_buffer_write_pixel_565(frame_buffer, 1, 3, 0b11111, 0b111111, 0b11111);
+
+    frame_buffer_write_pixel_565(frame_buffer, 510, 0, 0b11111, 0, 0);
+    frame_buffer_write_pixel_565(frame_buffer, 511, 0, 0b11111, 0, 0);
+    frame_buffer_write_pixel_565(frame_buffer, 510, 1, 0b11111, 0, 0);
+    frame_buffer_write_pixel_565(frame_buffer, 511, 1, 0b11111, 0, 0);
+    frame_buffer_write_pixel_565(frame_buffer, 510, 2, 0b11111, 0, 0);
+    frame_buffer_write_pixel_565(frame_buffer, 511, 2, 0b11111, 0, 0);
+
+    frame_buffer_write_pixel_565(frame_buffer, 0, 795, 0, 0b111111, 0);
+    frame_buffer_write_pixel_565(frame_buffer, 1, 795, 0, 0b111111, 0);
+    frame_buffer_write_pixel_565(frame_buffer, 0, 796, 0, 0b111111, 0);
+    frame_buffer_write_pixel_565(frame_buffer, 1, 796, 0, 0b111111, 0);
+    frame_buffer_write_pixel_565(frame_buffer, 0, 797, 0, 0b111111, 0);
+    frame_buffer_write_pixel_565(frame_buffer, 1, 797, 0, 0b111111, 0);
+    frame_buffer_write_pixel_565(frame_buffer, 0, 798, 0, 0b111111, 0);
+    frame_buffer_write_pixel_565(frame_buffer, 1, 798, 0, 0b111111, 0);
+    frame_buffer_write_pixel_565(frame_buffer, 2, 798, 0, 0b111111, 0);
+    frame_buffer_write_pixel_565(frame_buffer, 3, 798, 0, 0b111111, 0);
+    frame_buffer_write_pixel_565(frame_buffer, 0, 799, 0, 0b111111, 0);
+    frame_buffer_write_pixel_565(frame_buffer, 1, 799, 0, 0b111111, 0);
+    frame_buffer_write_pixel_565(frame_buffer, 2, 799, 0, 0b111111, 0);
+    frame_buffer_write_pixel_565(frame_buffer, 3, 799, 0, 0b111111, 0);
+
+    frame_buffer_write_pixel_565(frame_buffer, 510, 797, 0, 0, 0b11111);
+    frame_buffer_write_pixel_565(frame_buffer, 511, 797, 0, 0, 0b11111);
+    frame_buffer_write_pixel_565(frame_buffer, 510, 798, 0, 0, 0b11111);
+    frame_buffer_write_pixel_565(frame_buffer, 511, 798, 0, 0, 0b11111);
+    frame_buffer_write_pixel_565(frame_buffer, 510, 799, 0, 0, 0b11111);
+    frame_buffer_write_pixel_565(frame_buffer, 511, 799, 0, 0, 0b11111);
+
+    for (int i = 0; i < 300; ++i) {
+        for (int j = 0; j < 120; ++j) {
+            frame_buffer_write_pixel_565(frame_buffer, 75 + i, 75 + j, 0b11111, 0b111111, 0b11111);
+        }
+    }
+
+    for (int i = 0; i < 32; ++i) {
+        for (int j = 0; j < 50; ++j) {
+            frame_buffer_write_pixel_565(frame_buffer, 100 + j, 100 + i, i, 0, 0);
+        }
+    }
+
+    for (int i = 0; i < 64; ++i) {
+        for (int j = 0; j < 50; ++j) {
+            frame_buffer_write_pixel_565(frame_buffer, 200 + j, 100 + i, 0, i, 0);
+        }
+    }
+
+    for (int i = 0; i < 32; ++i) {
+        for (int j = 0; j < 50; ++j) {
+            frame_buffer_write_pixel_565(frame_buffer, 300 + j, 100 + i, 0, 0, i);
+        }
     }
 
     // Trying out simulation exit.

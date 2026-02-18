@@ -3,7 +3,14 @@
 # SPDX-License-Identifier: Apache-2.0
 
 set(NAME hello_world)
-add_executable(${NAME} hello_world.c)
+add_executable(${NAME} ${NAME}.c)
+target_link_libraries(${NAME} hal startup)
+target_compile_options(${NAME} PUBLIC ${NON_CHERI_FLAGS})
+install(TARGETS ${NAME})
+mocha_add_executable_artefacts(${NAME})
+
+set(NAME display_demo)
+add_executable(${NAME} ${NAME}.c)
 target_link_libraries(${NAME} hal startup)
 target_compile_options(${NAME} PUBLIC ${NON_CHERI_FLAGS})
 install(TARGETS ${NAME})

@@ -502,6 +502,5 @@ module cva6_rvfi
                          csr.pmpaddr_q[i][CVA6Cfg.PLEN-3:1], pmpcfg_q[i].addr_mode[1]})
     end
   endgenerate
-  ;
 
 endmodule

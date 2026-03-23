@@ -66,7 +66,10 @@ module tb;
     .spi_device_tpm_csb_i (1'b0             ),
     // DRAM.
     .dram_req_o           (dram_req         ),
-    .dram_resp_i          (dram_resp        )
+    .dram_resp_i          (dram_resp        ),
+    // Rest of chip AXI tie-off.
+    .rest_of_chip_req_o   (                 ),
+    .rest_of_chip_resp_i  ('0               )
   );
 
   // Signals to connect the sink

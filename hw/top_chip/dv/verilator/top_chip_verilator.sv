@@ -70,7 +70,10 @@ module top_chip_verilator (input logic clk_i, rst_ni);
     .spi_device_tpm_csb_i ('0),
 
     .dram_req_o  (dram_req),
-    .dram_resp_i (dram_resp)
+    .dram_resp_i (dram_resp),
+
+    .rest_of_chip_req_o  ( ), // Rest of chip AXI tie-off
+    .rest_of_chip_resp_i ('0)
   );
 
   // Virtual GPIO

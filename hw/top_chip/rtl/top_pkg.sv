@@ -17,11 +17,11 @@ package top_pkg;
   localparam int TL_DBW = (TL_DW>>3);
   localparam int TL_SZW = $clog2($clog2(TL_DBW)+1);
 
-  // AXI crossbar parameters
+  // Mocha AXI crossbar parameters
   localparam int AxiXbarHosts   = 1;
-  localparam int AxiXbarDevices = 4;
+  localparam int AxiXbarDevices = 5;
 
-  // AXI crossbar hosts and devices
+  // Mocha AXI crossbar hosts and devices
   typedef enum int unsigned {
     CVA6 = 0
   } axi_hosts_t;
@@ -29,13 +29,15 @@ package top_pkg;
   typedef enum int unsigned {
     SRAM       = 0,
     Mailbox    = 1,
-    TlCrossbar = 2,
-    DRAM       = 3
+    RestOfChip = 2,
+    TlCrossbar = 3,
+    DRAM       = 4
   } axi_devices_t;
 
   typedef enum longint unsigned {
     SRAMBase       = 64'h1000_0000,
     MailboxBase    = 64'h2001_0000,
+    RestOfChipBase = 64'h3000_0000,
     TlCrossbarBase = 64'h4000_0000,
     DRAMBase       = 64'h8000_0000
   } axi_addr_start_t;
@@ -43,6 +45,7 @@ package top_pkg;
   typedef enum longint unsigned {
     SRAMLength       = 64'h0002_0000,
     MailboxLength    = 64'h0001_0000,
+    RestOfChipLength = 64'h0004_0000,
     TlCrossbarLength = 64'h1000_0000,
     DRAMLength       = 64'h3F80_0000
   } axi_addr_length_t;
@@ -50,9 +53,35 @@ package top_pkg;
   typedef enum longint unsigned {
     SRAMMask       = SRAMLength - 1,
     MailboxMask    = MailboxLength - 1,
+    RestOfChipMask = RestOfChipLength - 1,
     TlCrossbarMask = TlCrossbarLength - 1,
     DRAMMask       = DRAMLength - 1
   } axi_addr_mask_t;
+
+  // Rest of chip AXI crossbar parameters
+  localparam int RestOfChipAxiXbarHosts   = 1;
+  localparam int RestOfChipAxiXbarDevices = 1;
+
+  // Rest of chip AXI crossbar hosts and devices
+  typedef enum int unsigned {
+    MochaAXICrossbar = 0
+  } rest_of_chip_axi_hosts_t;
+
+  typedef enum int unsigned {
+    Ethernet = 0
+  } rest_of_chip_axi_devices_t;
+
+  typedef enum longint unsigned {
+    EthernetBase = 64'h3000_0000
+  } rest_of_chip_axi_addr_start_t;
+
+  typedef enum longint unsigned {
+    EthernetLength = 64'h0001_0000
+  } rest_of_chip_axi_addr_length_t;
+
+  typedef enum longint unsigned {
+    EthernetMask = EthernetLength - 1
+  } rest_of_chip_axi_addr_mask_t;
 
   // Tag controller parameters
   localparam int     unsigned CapSizeBits              = 128;

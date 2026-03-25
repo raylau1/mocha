@@ -91,7 +91,6 @@ module chip_mocha_genesys2 #(
   logic clk_50m;       // 50 MHz mocha clock generated from clk_200m
   logic clk_125m;      // 125 MHz ethernet clock generated from clk_200m
   logic clk_125m_quad; // 125 MHz quadrature ethernet clock generated from clk_200m
-
   // Internal reset signals
   logic fpga_rst_n_sync_cfg;     // FPGA initial reset, initial assertion, deassertion sync to clk_cfg
   logic mig_rst_n_sync_cfg;      // MIG system reset, async assertion, deassertion sync to clk_cfg
@@ -512,4 +511,40 @@ module chip_mocha_genesys2 #(
     .T(~eth_mdio_oe)      // 3-state enable input, high=input, low=output
   );
 
+  // Ethernet ILA
+  (* MARK_DEBUG = "TRUE" *) logic        tx_enable_i;
+  (* MARK_DEBUG = "TRUE" *) logic [10:0] tx_frame_addr;
+  (* MARK_DEBUG = "TRUE" *) logic        tx_axis_tvalid_dly;
+  (* MARK_DEBUG = "TRUE" *) logic        tx_axis_tready;
+  (* MARK_DEBUG = "TRUE" *) logic        tx_axis_tvalid;
+  (* MARK_DEBUG = "TRUE" *) logic [7:0]  tx_axis_tdata;
+  (* MARK_DEBUG = "TRUE" *) logic	       tx_axis_tlast;
+  (* MARK_DEBUG = "TRUE" *) logic        rx_axis_tvalid;
+  (* MARK_DEBUG = "TRUE" *) logic [7:0]  rx_axis_tdata;
+  (* MARK_DEBUG = "TRUE" *) logic        rx_axis_tlast;
+  always_ff @(posedge clk_125m) begin
+    tx_enable_i        <= u_eth_rgmii.tx_enable_i;
+    tx_frame_addr      <= u_eth_rgmii.tx_frame_addr;
+    tx_axis_tvalid_dly <= u_eth_rgmii.tx_axis_tvalid_dly;
+    tx_axis_tready     <= u_eth_rgmii.tx_axis_tready;
+    tx_axis_tvalid     <= u_eth_rgmii.tx_axis_tvalid;
+    tx_axis_tdata      <= u_eth_rgmii.tx_axis_tdata;
+    tx_axis_tlast      <= u_eth_rgmii.tx_axis_tlast;
+    rx_axis_tvalid     <= u_eth_rgmii.rx_axis_tvalid;
+    rx_axis_tdata      <= u_eth_rgmii.rx_axis_tdata;
+    rx_axis_tlast      <= u_eth_rgmii.rx_axis_tlast;
+  end
+  eth_ila u_eth_ila (
+    .clk(clk_125m),
+    .probe0(tx_enable_i),
+    .probe1(tx_frame_addr),
+    .probe2(tx_axis_tvalid_dly),
+    .probe3(tx_axis_tready),
+    .probe4(tx_axis_tvalid),
+    .probe5(tx_axis_tdata),
+    .probe6(tx_axis_tlast),
+    .probe7(rx_axis_tvalid),
+    .probe8(rx_axis_tdata),
+    .probe9(rx_axis_tlast)
+  );
 endmodule

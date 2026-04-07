@@ -78,6 +78,9 @@ module chip_mocha_genesys2 #(
   logic [3:0]  qspi_device_sdo;
   logic [3:0]  qspi_device_sdo_en;
 
+  logic [3:0] spi_host_sd;
+  logic [3:0] spi_host_sd_en;
+
   // AXI signals
   // Tag controller to CDC FIFO, synchronous to u_top_chip_system.clkmgr_clocks.clk_main_infra
   top_pkg::axi_dram_req_t  dram_req;
@@ -178,6 +181,19 @@ module chip_mocha_genesys2 #(
     .spi_device_sd_en_o   (qspi_device_sdo_en),
     .spi_device_sd_i      ({3'h0, spi_device_sd_i}), // SPI MOSI = QSPI DQ0
     .spi_device_tpm_csb_i ('0),
+
+    // SPI host
+    .spi_host_sck_o    ( ),
+    .spi_host_sck_en_o ( ),
+    .spi_host_csb_o    ( ),
+    .spi_host_csb_en_o ( ),
+    .spi_host_sd_o     (spi_host_sd),
+    .spi_host_sd_en_o  (spi_host_sd_en),
+    // Mapping output 0 to input 1 because legacy SPI does not allow
+    // bi-directional wires.
+    // This only works in standard mode where sd_o[0]=COPI and
+    // sd_i[1]=CIPO.
+    .spi_host_sd_i     ({2'b0, spi_host_sd_en[0] ? spi_host_sd[0] : 1'b0, 1'b0}),
 
     // DRAM
     .dram_req_o  (dram_req),

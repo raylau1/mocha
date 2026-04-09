@@ -127,7 +127,7 @@ spi_host_t mocha_system_spi_host(void)
 plic_t mocha_system_plic(void)
 {
 #if defined(__riscv_zcherihybrid)
-    return (plic_t)create_mmio_capability(plic_base, 0x4004004u);
+    return (plic_t)create_mmio_capability(plic_base, sizeof(struct plic_memory_layout));
 #else /* !defined(__riscv_zcherihybrid) */
     return (plic_t)plic_base;
 #endif /* defined(__riscv_zcherihybrid) */

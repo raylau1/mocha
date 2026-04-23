@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
       "TOP.top_chip_verilator.u_top_chip_system.u_axi_sram.u_ram",
       16 * 1024, // 16K 64-bit words = 128 KiB
       "TOP.top_chip_verilator.u_dram_wrapper.u_ext_mem",
-      256 * 1024 * 1024, // 256M 64-bit words = 2 GiB
+      128 * 1024 * 1024, // 128M 64-bit words = 1 GiB (including tag storage)
       "TOP.top_chip_verilator.u_top_chip_system.u_rom_ctrl.gen_rom_scramble_disabled.u_rom.u_prim_rom",
       8 * 1024 // 8K 32-bit words = 32 KiB
   );

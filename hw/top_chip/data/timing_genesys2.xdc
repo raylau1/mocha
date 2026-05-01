@@ -3,7 +3,8 @@
 ## SPDX-License-Identifier: Apache-2.0
 
 ## System Clock Signal
-create_clock -period 5.000 -waveform {0 2.5} -name sys_clk_pin -add [get_ports sysclk_200m_pi];
+## Removed since the generated MIG already provides this clock constraint
+## create_clock -period 5.000 -waveform {0 2.5} -name sys_clk_pin -add [get_ports sysclk_200m_pi];
 
 ## Free-running Oscillator Clock from Configuration Logic
 create_clock -period 10.000 -waveform {0 5} -name cfg_clk_pin -add [get_pins clk_gen/STARTUPE2_inst/CFGMCLK];

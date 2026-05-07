@@ -1,8 +1,8 @@
 diff --git a/framing_top.sv b/framing_top.sv
-index 93c87c0..5a2267e 100644
+index 93c87c0..49c6ace 100644
 --- a/framing_top.sv
 +++ b/framing_top.sv
-@@ -116,11 +116,21 @@ reg        byte_sync, sync, irq_en, tx_busy;
+@@ -116,11 +116,22 @@ reg        byte_sync, sync, irq_en, tx_busy;
     assign tx_axis_tdata = douta >> {tx_frame_addr[2],3'b000};
     assign phy_mdc = phy_mdclk;
     
@@ -10,8 +10,9 @@ index 93c87c0..5a2267e 100644
 +    logic [2:0] rx_buf_offset;
 +
 +    always_ff @(posedge clk_int) begin
-+      if (rst_int) rx_use_incr_buf_offset <= 1'b1;
-+      else         rx_use_incr_buf_offset <= (rx_addr_axis < 7);
++      if (rst_int)                rx_use_incr_buf_offset <= 1'b1;
++      else if (rx_addr_axis < 7)  rx_use_incr_buf_offset <= 1'b1;
++      else if (rx_addr_axis == 7) rx_use_incr_buf_offset <= !sync;
 +    end
 +
 +    assign rx_buf_offset = rx_use_incr_buf_offset ? (nextbuf[2:0] + 3'b1) : nextbuf[2:0];

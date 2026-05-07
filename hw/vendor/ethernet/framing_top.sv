@@ -130,8 +130,9 @@ reg        byte_sync, sync, irq_en, tx_busy;
     logic [2:0] rx_buf_offset;
 
     always_ff @(posedge clk_int) begin
-      if (rst_int) rx_use_incr_buf_offset <= 1'b1;
-      else         rx_use_incr_buf_offset <= (rx_addr_axis < 7);
+      if (rst_int)                rx_use_incr_buf_offset <= 1'b1;
+      else if (rx_addr_axis < 7)  rx_use_incr_buf_offset <= 1'b1;
+      else if (rx_addr_axis == 7) rx_use_incr_buf_offset <= !sync;
     end
 
     assign rx_buf_offset = rx_use_incr_buf_offset ? (nextbuf[2:0] + 3'b1) : nextbuf[2:0];

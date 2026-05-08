@@ -28,6 +28,7 @@
     {from: "util/version_file.py", to: "util/version_file.py"}, // Dependency of top generator.
 
     // Hardware IP blocks.
+    {from: "hw/ip/entropy_src",  to: "ip/entropy_src", patch_dir: "entropy_src"}, // Entropy source.
     {from: "hw/ip/i2c",          to: "ip/i2c", patch_dir: "i2c"}, // I^2C controller/target
     {from: "hw/ip/kmac",         to: "ip/kmac"}, // kmac.
     {from: "hw/ip/lc_ctrl",      to: "ip/lc_ctrl"}, // Dependency of crossbar and power manager.

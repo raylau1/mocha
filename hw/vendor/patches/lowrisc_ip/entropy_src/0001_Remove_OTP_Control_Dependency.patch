@@ -1,0 +1,12 @@
+diff --git a/entropy_src.core b/entropy_src.core
+index 2ce79e6..10fe9d0 100644
+--- a/entropy_src.core
++++ b/entropy_src.core
+@@ -20,7 +20,6 @@ filesets:
+       - lowrisc:prim:mubi
+       - lowrisc:ip:tlul
+       - lowrisc:ip:sha3
+-      - lowrisc:ip:otp_ctrl_pkg
+       - lowrisc:ip:entropy_src_pkg
+       - lowrisc:ip:entropy_src_ack_sm_pkg
+       - lowrisc:ip:entropy_src_main_sm_pkg

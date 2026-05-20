@@ -27,7 +27,7 @@
 
 #define SPI_DEVICE_ADDR_MODE_REG          (0x20)
 #define SPI_DEVICE_ADDR_MODE_4B_EN_MASK   (0x1)
-#define SPI_DEVICE_ADDR_MODE_PENDING_MASK (0x70000000)
+#define SPI_DEVICE_ADDR_MODE_PENDING_MASK (0x80000000)
 
 #define SPI_DEVICE_FLASH_STATUS_REG       (0x28)
 #define SPI_DEVICE_FLASH_STATUS_BUSY_MASK (0x1)
@@ -177,7 +177,8 @@ void spi_device_interrupt_enable(spi_device_t spi_device, uint8_t intr_id);
 void spi_device_interrupt_disable(spi_device_t spi_device, uint8_t intr_id);
 void spi_device_interrupt_trigger(spi_device_t spi_device, uint8_t intr_id);
 void spi_device_enable_set(spi_device_t spi_device, bool enable);
-void spi_device_4b_addr_mode_enable_set(spi_device_t spi_device, bool enable);
+void spi_device_4b_addr_mode_enable_set_non_blocking(spi_device_t spi_device, bool enable);
+void spi_device_4b_addr_mode_enable_set_blocking(spi_device_t spi_device, bool enable);
 bool spi_device_4b_addr_mode_enable_get(spi_device_t spi_device);
 void spi_device_flash_status_set(spi_device_t spi_device, uint32_t flash_status);
 uint32_t spi_device_flash_status_get(spi_device_t spi_device);

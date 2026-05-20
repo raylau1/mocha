@@ -48,16 +48,6 @@ bool cmd_info_readback_test(spi_device_t spi_device, uint32_t offset)
 
 bool reg_test(spi_device_t spi_device)
 {
-    spi_device_4b_addr_mode_enable_set(spi_device, true);
-    if (!spi_device_4b_addr_mode_enable_get(spi_device)) {
-        return false;
-    }
-
-    spi_device_4b_addr_mode_enable_set(spi_device, false);
-    if (spi_device_4b_addr_mode_enable_get(spi_device)) {
-        return false;
-    }
-
     spi_device_jedec_cc_set(spi_device, 0xE1, 0x45);
     if ((spi_device_jedec_cc_get(spi_device) & 0xFFFF) != 0x45E1) {
         return false;

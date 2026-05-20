@@ -56,7 +56,12 @@ void spi_device_enable_set(spi_device_t spi_device, bool enable)
     DEV_WRITE(spi_device + SPI_DEVICE_CTRL_REG, enable << SPI_DEVICE_CTRL_MODE_OFFSET);
 }
 
-void spi_device_4b_addr_mode_enable_set(spi_device_t spi_device, bool enable)
+void spi_device_4b_addr_mode_enable_set_non_blocking(spi_device_t spi_device, bool enable)
+{
+    DEV_WRITE(spi_device + SPI_DEVICE_ADDR_MODE_REG, (uint32_t)enable);
+}
+
+void spi_device_4b_addr_mode_enable_set_blocking(spi_device_t spi_device, bool enable)
 {
     DEV_WRITE(spi_device + SPI_DEVICE_ADDR_MODE_REG, (uint32_t)enable);
 
@@ -574,7 +579,7 @@ void spi_device_sfdp_table_init(spi_device_t spi_device)
 
 void spi_device_init(spi_device_t spi_device)
 {
-    spi_device_4b_addr_mode_enable_set(spi_device, true);
+    spi_device_4b_addr_mode_enable_set_non_blocking(spi_device, true);
     spi_device_jedec_cc_set(spi_device, MOCHA_SPI_DEVICE_JEDEC_CC, MOCHA_SPI_DEVICE_JEDEC_CC_COUNT);
     spi_device_jedec_id_set(spi_device, MOCHA_SPI_DEVICE_ROM_BOOTSTRAP, MOCHA_SPI_DEVICE_CHIP_REV,
                             MOCHA_SPI_DEVICE_CHIP_GEN, MOCHA_SPI_DEVICE_DENSITY_BYTES_LOG2,

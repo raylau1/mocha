@@ -670,7 +670,7 @@ module top_chip_system #(
     .InputDelayCycles(0) // note: may not be true for all tops
   ) u_i2c (
     .clk_i  (clkmgr_clocks.clk_io_infra),
-    .rst_ni (rstmgr_resets.rst_io_n[rstmgr_pkg::DomainMainSel]),
+    .rst_ni (rstmgr_resets.rst_i2c_n[rstmgr_pkg::DomainMainSel]),
 
     .alert_rx_i (prim_alert_pkg::ALERT_RX_DEFAULT),
     .alert_tx_o ( ),
@@ -757,7 +757,7 @@ module top_chip_system #(
   // Instantiate SPI device
   spi_device u_spi_device (
     .clk_i  (clkmgr_clocks.clk_io_infra),
-    .rst_ni (rstmgr_resets.rst_io_n[rstmgr_pkg::DomainMainSel]),
+    .rst_ni (rstmgr_resets.rst_spi_device_n[rstmgr_pkg::DomainMainSel]),
 
     // Signals to xbar
     .tl_i (tl_spi_device_h2d),
@@ -809,7 +809,7 @@ module top_chip_system #(
   ) u_spi_host (
     // Clock and reset.
     .clk_i  (clkmgr_clocks.clk_io_infra),
-    .rst_ni (rstmgr_resets.rst_io_n[rstmgr_pkg::DomainMainSel]),
+    .rst_ni (rstmgr_resets.rst_spi_host_n[rstmgr_pkg::DomainMainSel]),
 
     // TileLink bus connections.
     .tl_i (tl_spi_host_h2d),
@@ -1013,8 +1013,7 @@ module top_chip_system #(
   assign unused_manager_output =
     clkmgr_clocks.clk_main_hint | clkmgr_clocks.clk_io_peri |
     (|clkmgr_cg_en) |
-    (|rstmgr_resets.rst_por_n) | (|rstmgr_resets.rst_spi_device_n) | (|rstmgr_resets.rst_spi_host_n) | (|rstmgr_resets.rst_i2c_n) |
-    (|rstmgr_resets.rst_debug_n) | (|rstmgr_rst_en);
+    (|rstmgr_resets.rst_por_n) | (|rstmgr_resets.rst_debug_n) | (|rstmgr_rst_en);
 
   // Combine response and request between crossbar and atomics wrapper.
   AXI_BUS #(

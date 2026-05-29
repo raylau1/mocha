@@ -913,16 +913,20 @@ module top_chip_system #(
     .tl_o        (tl_clkmgr_d2h),
     .scanmode_i  (prim_mubi_pkg::MuBi4False),
 
-    // Clock and reset connections.
+    // Primary module control clocks and resets.
     .clk_i            (clkmgr_clocks.clk_io_powerup),
-    .clk_main_i       (clk_i),
-    .clk_io_i         (clk_i),
-    .clk_aon_i        (clk_i),
-    .rst_shadowed_ni  (rstmgr_resets.rst_por_io_n[rstmgr_pkg::DomainAonSel]),
     .rst_ni           (rstmgr_resets.rst_por_io_n[rstmgr_pkg::DomainAonSel]),
-    .rst_aon_ni       (rstmgr_resets.rst_por_io_n[rstmgr_pkg::DomainAonSel]),
-    .rst_io_ni        (rstmgr_resets.rst_por_io_n[rstmgr_pkg::DomainAonSel]),
-    .rst_main_ni      (rstmgr_resets.rst_por_io_n[rstmgr_pkg::DomainAonSel]),
+    .rst_shadowed_ni  (rstmgr_resets.rst_por_io_n[rstmgr_pkg::DomainAonSel]),
+
+    // System source clocks and resets.
+    .clk_main_i       (clk_i),
+    .rst_main_ni      (rstmgr_resets.rst_main_n[rstmgr_pkg::DomainAonSel]),
+    .clk_io_i         (clk_i),
+    .rst_io_ni        (rstmgr_resets.rst_io_n[rstmgr_pkg::DomainAonSel]),
+    .clk_aon_i        (clk_i),
+    .rst_aon_ni       (rstmgr_resets.rst_aon_n[rstmgr_pkg::DomainAonSel]),
+
+    // Resets for derived clock generation, root clock gating and related status.
     .rst_root_ni      (rstmgr_resets.rst_por_io_n[rstmgr_pkg::DomainAonSel]),
     .rst_root_io_ni   (rstmgr_resets.rst_por_io_n[rstmgr_pkg::DomainAonSel]),
     .rst_root_main_ni (rstmgr_resets.rst_por_n[rstmgr_pkg::DomainAonSel])

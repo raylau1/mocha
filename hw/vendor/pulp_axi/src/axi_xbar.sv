@@ -13,6 +13,8 @@
 // - Andreas Kurth <akurth@iis.ee.ethz.ch>
 // - Florian Zaruba <zarubaf@iis.ee.ethz.ch>
 
+`include "prim_assert.sv"
+
 /// axi_xbar: Fully-connected AXI4+ATOP crossbar with an arbitrary number of slave and master ports.
 /// See `doc/axi_xbar.md` for the documentation, including the definition of parameters and ports.
 module axi_xbar
@@ -164,6 +166,10 @@ module axi_xbar
   end
   `endif
   `endif
+
+  // Assert Known for outputs
+  `ASSERT_KNOWN(HostRespKnown_A, slv_ports_resp_o)
+  `ASSERT_KNOWN(DevReqKnown_A, mst_ports_req_o)
   // pragma translate_on
 endmodule
 

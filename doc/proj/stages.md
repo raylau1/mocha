@@ -12,7 +12,7 @@ This table shows the current design and verification stage for each block in Moc
 
 | **Block name**        | **Design stage** | **Verification stage** |
 |-----------------------|------------------|------------------------|
-| AXI crossbar          | D0               | V0                     |
+| [AXI crossbar][]      | D1               | V0                     |
 | Clock manager         | D0               | V0                     |
 | CVA6-CHERI            | D0               | V0                     |
 | Debug module          | D0               | V0                     |
@@ -33,6 +33,7 @@ This table shows the current design and verification stage for each block in Moc
 | Timer                 | D0               | V0                     |
 | [UART][]              | D1               | V1                     |
 
+[AXI crossbar]: axi_xbar.md
 [TileLink crossbar]: xbar_peri.md
 [UART]: uart.md
 

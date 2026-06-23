@@ -295,4 +295,14 @@ module prim_fifo_async #(
   `ASSERT(GrayRptr_A, ##1 $countones(fifo_rptr_gray_q ^ $past(fifo_rptr_gray_q)) <= 1,
           clk_rd_i, !rst_rd_ni)
 
+  //////////////////////
+  // Known Assertions //
+  //////////////////////
+
+  `ASSERT_KNOWN_IF(DataKnown_A, rdata_o, rvalid_o, clk_rd_i, !rst_rd_ni)
+  `ASSERT_KNOWN(WriteDepthKnown_A, wdepth_o, clk_wr_i, !rst_wr_ni)
+  `ASSERT_KNOWN(ReadDepthKnown_A, rdepth_o, clk_rd_i, !rst_rd_ni)
+  `ASSERT_KNOWN(RvalidKnown_A, rvalid_o, clk_rd_i, !rst_rd_ni)
+  `ASSERT_KNOWN(WreadyKnown_A, wready_o, clk_wr_i, !rst_wr_ni)
+
 endmodule

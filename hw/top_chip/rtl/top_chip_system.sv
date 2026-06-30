@@ -239,8 +239,8 @@ module top_chip_system #(
   top_pkg::axi_dev_resp_t                           dram_cut_resp;
   top_pkg::axi_dev_req_t                            tag_controller_isolated_req;
   top_pkg::axi_dev_resp_t                           tag_controller_isolated_resp;
-  top_pkg::axi_dev_req_t                            rom_mem_isolated_req;
-  top_pkg::axi_dev_resp_t                           rom_mem_isolated_resp;
+  top_pkg::axi_req_t                                rom_mem_isolated_req;
+  top_pkg::axi_resp_t                               rom_mem_isolated_resp;
 
   // Tag controller isolation signals and registers
   logic tag_controller_isolate;
@@ -397,8 +397,8 @@ module top_chip_system #(
     .rvfi_probes_o ( ),
     .cvxif_req_o   ( ),
     .cvxif_resp_i  ('0),
-    .noc_req_o     (cva6_to_sim_req),
-    .noc_resp_i    (sim_to_cva6_resp)
+    .noc_req_o     (rom_mem_isolated_req),
+    .noc_resp_i    (rom_mem_isolated_resp)
   );
 
   // JTAG to DMI bridge
@@ -1325,17 +1325,17 @@ module top_chip_system #(
     .AtopSupport          ( 1'b0                    ),
     .AxiAddrWidth         ( top_pkg::AxiAddrWidth   ),
     .AxiDataWidth         ( top_pkg::AxiDataWidth   ),
-    .AxiIdWidth           ( top_pkg::AxiDevIdWidth  ),
+    .AxiIdWidth           ( top_pkg::AxiIdWidth     ),
     .AxiUserWidth         ( top_pkg::AxiUserWidth   ),
-    .axi_req_t            ( top_pkg::axi_dev_req_t  ),
-    .axi_resp_t           ( top_pkg::axi_dev_resp_t )
+    .axi_req_t            ( top_pkg::axi_req_t      ),
+    .axi_resp_t           ( top_pkg::axi_resp_t     )
   ) u_rom_isolate (
     .clk_i      (clkmgr_clocks.clk_main_infra),
     .rst_ni     (rstmgr_resets.rst_main_n[rstmgr_pkg::DomainMainSel]),
-    .slv_req_i  (xbar_device_req[top_pkg::RomCtrlMem]),
-    .slv_resp_o (xbar_device_resp[top_pkg::RomCtrlMem]),
-    .mst_req_o  (rom_mem_isolated_req),
-    .mst_resp_i (rom_mem_isolated_resp),
+    .slv_req_i  (rom_mem_isolated_req),
+    .slv_resp_o (rom_mem_isolated_resp),
+    .mst_req_o  (cva6_to_sim_req),
+    .mst_resp_i (sim_to_cva6_resp),
     .isolate_i  (rom_mem_isolate),
     .isolated_o ( )
   );
@@ -1357,8 +1357,8 @@ module top_chip_system #(
 
     // AXI interface.
     .busy_o     ( ),
-    .axi_req_i  (rom_mem_isolated_req),
-    .axi_resp_o (rom_mem_isolated_resp),
+    .axi_req_i  (xbar_device_req[top_pkg::RomCtrlMem]),
+    .axi_resp_o (xbar_device_resp[top_pkg::RomCtrlMem]),
 
     // Memory interface.
     .mem_req_o    (mem64_tl_rom_mem_req),

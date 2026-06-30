@@ -94,6 +94,7 @@ lint_off -rule WIDTHEXPAND -file "*/lowrisc_common_cells_all*/rtl/popcount.sv" -
 lint_off -rule UNOPTFLAT -file "*/lowrisc_common_cells_all*/rtl/lzc.sv" -match "*sel_nodes*"
 lint_off -rule UNOPTFLAT -file "*/lowrisc_common_cells_all*/rtl/lzc.sv" -match "*index_nodes*"
 lint_off -rule UNOPTFLAT -file "*/*lowrisc_common_cells_all*/rtl/rr_arb_tree.sv" -match "*gnt_nodes*"
+lint_off -rule UNOPTFLAT -file "*/*lowrisc_common_cells_all*/rtl/rr_arb_tree.sv" -match "*req_nodes*"
 lint_off -rule UNOPTFLAT -file "*/*lowrisc_common_cells_all*/rtl/id_queue.sv" -match "*match_in_id_valid*"
 lint_off -rule UNOPTFLAT -file "*/*lowrisc_common_cells_all*/rtl/onehot_to_bin.sv" -match "*onehot_to_bin.bin*"
 

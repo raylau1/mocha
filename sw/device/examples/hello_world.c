@@ -15,6 +15,10 @@ int main(void)
     gpio_t gpio = mocha_system_gpio();
     uart_t uart = mocha_system_uart();
     timer_t timer = mocha_system_timer();
+    rom_ctrl_t rom_ctrl = mocha_system_rom_ctrl();
+    gpio_set_oe_pin(gpio, 0, false);
+    uprintf(uart, "IO0: %x", gpio_read_pin(gpio, 0));
+
     gpio_set_oe_pin(gpio, 0, true);
     gpio_set_oe_pin(gpio, 1, true);
     gpio_set_oe_pin(gpio, 2, true);
@@ -25,6 +29,28 @@ int main(void)
     timer_enable_write(timer, true);
 
     uprintf(uart, "Hello CHERI Mocha!\n");
+
+    uprintf(uart, "ROM F: %x\n", DEV_READ(rom_ctrl + 0x4));
+    uprintf(uart, "DIG:    %x %x %x %x %x %x %x %x\n",
+        DEV_READ(rom_ctrl + 0x8),
+        DEV_READ(rom_ctrl + 0xc),
+        DEV_READ(rom_ctrl + 0x10),
+        DEV_READ(rom_ctrl + 0x14),
+        DEV_READ(rom_ctrl + 0x18),
+        DEV_READ(rom_ctrl + 0x1c),
+        DEV_READ(rom_ctrl + 0x20),
+        DEV_READ(rom_ctrl + 0x24)
+    );
+    uprintf(uart, "EXPDIG: %x %x %x %x %x %x %x %x\n",
+        DEV_READ(rom_ctrl + 0x28),
+        DEV_READ(rom_ctrl + 0x2c),
+        DEV_READ(rom_ctrl + 0x30),
+        DEV_READ(rom_ctrl + 0x34),
+        DEV_READ(rom_ctrl + 0x38),
+        DEV_READ(rom_ctrl + 0x3c),
+        DEV_READ(rom_ctrl + 0x40),
+        DEV_READ(rom_ctrl + 0x44)
+    );
 
     // Print every 100us
     for (int i = 0; i < 4; ++i) {

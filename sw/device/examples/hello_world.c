@@ -16,8 +16,9 @@ int main(void)
     uart_t uart = mocha_system_uart();
     timer_t timer = mocha_system_timer();
     rom_ctrl_t rom_ctrl = mocha_system_rom_ctrl();
+    rom_t rom = mocha_system_rom();
     gpio_set_oe_pin(gpio, 0, false);
-    uprintf(uart, "IO0: %x", gpio_read_pin(gpio, 0));
+    uprintf(uart, "IO0: %x\n", gpio_read_pin(gpio, 0));
 
     gpio_set_oe_pin(gpio, 0, true);
     gpio_set_oe_pin(gpio, 1, true);
@@ -30,7 +31,7 @@ int main(void)
 
     uprintf(uart, "Hello CHERI Mocha!\n");
 
-    uprintf(uart, "ROM F: %x\n", DEV_READ(rom_ctrl + 0x4));
+    // uprintf(uart, "ROM F: %x\n", DEV_READ(rom_ctrl + 0x4));
     uprintf(uart, "DIG:    %x %x %x %x %x %x %x %x\n",
         DEV_READ(rom_ctrl + 0x8),
         DEV_READ(rom_ctrl + 0xc),
@@ -52,6 +53,16 @@ int main(void)
         DEV_READ(rom_ctrl + 0x44)
     );
 
+    for (int j = 0; j < 0x1ffe; j = j + 7) {
+        uprintf(uart, "@%x", j);
+        for (int i = 0; i < 7; ++i) {
+            uprintf(uart, " %x", DEV_READ(rom + (j + i) * 4));
+        }
+        uprintf(uart, "\n");
+        timer_busy_sleep_us(timer, 10000u);
+    }
+    uprintf(uart, "@00001ffe %x %x\n", DEV_READ(rom + (0x1ffe) * 4), DEV_READ(rom + (0x1fff) * 4));
+
     // Print every 100us
     for (int i = 0; i < 4; ++i) {
         timer_busy_sleep_us(timer, 100u);
@@ -63,6 +74,7 @@ int main(void)
     // Trying out simulation exit.
     uprintf(uart, "Safe to exit simulator.\xd8\xaf\xfb\xa0\xc7\xe1\xa9\xd7");
     uprintf(uart, "This should not be printed in simulation.\r\n");
+    uprintf(uart, "TEST RESULT: PASSED\n");
 
     return 0;
 }

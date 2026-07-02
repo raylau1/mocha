@@ -112,6 +112,7 @@ module chip_mocha_genesys2 #(
   logic mig_rst_n_sync_cfg;      // MIG system reset, async assertion, deassertion sync to clk_cfg
   logic mig_axi_rst_n_sync_200m; // MIG AXI reset, async assertion, deassertion sync to clk_200m
   logic rst_n_sync_50m;          // Mocha top reset, async assertion, deassertion sync to clk_50m
+  logic rst_n_sync_assert_50m;   // Mocha top sync reset, assertion and deassertion sync to clk_50m
   logic eth_rst_n_sync_125m;     // Ethernet MAC reset, async assertion, deassertion sync to clk_125m
 
   // Initial reset shift register
@@ -207,6 +208,10 @@ module chip_mocha_genesys2 #(
     .q_o    (rst_n_sync_50m)
   );
 
+  always_ff @(posedge clk_50m) begin
+    rst_n_sync_assert_50m <= rst_n_sync_50m;
+  end
+
   prim_flop_2sync #(
     .Width      (1),
     .ResetValue ('0)
@@ -234,7 +239,7 @@ module chip_mocha_genesys2 #(
   ) u_top_chip_system (
     // Clock and reset
     .clk_i    (clk_50m),
-    .rst_ni   (rst_n_sync_50m),
+    .rst_ni   (rst_n_sync_assert_50m),
 
     // GPIO
     .gpio_i    ({sd_cd, 31'(gpio_i)}),

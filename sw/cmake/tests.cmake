@@ -81,7 +81,7 @@ set(ARCHS_FLAGS           VANILLA_FLAGS       CHERI_FLAGS ) # Flags
 # the output executable name and all of the libraries it is linked against.
 function(mocha_add_test)
     # parse arguments
-    set(options SKIP_FPGA SKIP_VERILATOR)
+    set(options SKIP_FPGA SKIP_VERILATOR SRAM)
     set(one_value_args NAME FPGA_TIMEOUT VERILATOR_TIMEOUT)
     set(multi_value_args SOURCES LIBRARIES)
     cmake_parse_arguments(arg "${options}"
@@ -96,9 +96,17 @@ function(mocha_add_test)
         foreach(LIB ${arg_LIBRARIES})
           target_link_libraries(${NAME} PUBLIC ${LIB}_${ARCH_NAME})
         endforeach()
-        target_link_options(${NAME} PUBLIC
-          "-Tmocha_dram.ld" "-L${LDS_DIR}"
-        )
+
+        if(NOT arg_SRAM)
+          target_link_options(${NAME} PUBLIC
+            "-Tmocha_dram.ld" "-L${LDS_DIR}"
+          )
+        else()
+          target_link_options(${NAME} PUBLIC
+            "-Tmocha_sram.ld" "-L${LDS_DIR}"
+          )
+        endif()
+
         # create artefacts
         mocha_add_executable_artefacts(NAME ${NAME})
 

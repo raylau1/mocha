@@ -1,0 +1,18 @@
+CAPI=2:
+# Copyright lowRISC and contributors (COSMIC project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+name: "lowrisc:mocha:key_interface_pkg"
+description: "Package for key interface."
+
+filesets:
+  files_rtl:
+    files:
+      - rtl/key_interface_pkg.sv
+    file_type: systemVerilogSource
+
+targets:
+  default:
+    filesets:
+      - files_rtl

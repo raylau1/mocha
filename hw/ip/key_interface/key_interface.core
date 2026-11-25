@@ -1,0 +1,25 @@
+CAPI=2:
+# Copyright lowRISC and contributors (COSMIC project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+name: "lowrisc:mocha:key_interface"
+description: "IP block for exposing Mocha-writable keys on the Mocha top."
+
+filesets:
+  files_rtl:
+    depend:
+      - lowrisc:mocha_constants:top_pkg
+      - lowrisc:mocha:axi_to_tlul
+      - lowrisc:mocha:key_interface_pkg
+      - lowrisc:prim:assert
+    files:
+      - rtl/key_interface_reg_pkg.sv
+      - rtl/key_interface_reg_top.sv
+      - rtl/key_interface.sv
+    file_type: systemVerilogSource
+
+targets:
+  default:
+    filesets:
+      - files_rtl

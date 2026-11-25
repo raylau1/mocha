@@ -23,9 +23,9 @@ filesets:
       - lowrisc:mocha_ip:rstmgr
       - lowrisc:mocha_ip:rv_plic
       - lowrisc:mocha:axi_sram
+      - lowrisc:mocha:axi_to_tlul
       - lowrisc:mocha:riscv_debug_module
       - lowrisc:prim:onehot
-      - lowrisc:tlul:adapter_host
       - lowrisc:tlul:adapter_reg
       - lowrisc:mocha_constants:top_racl_pkg
       - lowrisc:mocha_constants:jtag_id_pkg
@@ -36,7 +36,6 @@ filesets:
       - cosmic::tagctrl
       - cosmic:pulp:axi_riscv_atomics
     files:
-      - rtl/mem_downsizer.sv
       - rtl/top_chip_system.sv
     file_type: systemVerilogSource
 

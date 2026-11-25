@@ -89,7 +89,6 @@ module top_chip_system #(
 
   // Local parameters.
   localparam int unsigned SramMemSize    = 128 * 1024; // 128 KiB
-  localparam int unsigned TlDataWidth    = top_pkg::TL_DW;
   localparam int unsigned AxiAddrOffset  = $clog2(top_pkg::AxiDataWidth / 8);
   localparam int unsigned SramAddrWidth  = $clog2(SramMemSize) - AxiAddrOffset;
   localparam int unsigned GpioIrqs       = 32;
@@ -195,44 +194,6 @@ module top_chip_system #(
   // TL ROM
   tlul_pkg::tl_h2d_t tl_rom_ctrl_mem_h2d;
   tlul_pkg::tl_d2h_t tl_rom_ctrl_mem_d2h;
-
-  // 64-bit memory format signals
-  logic                                 mem64_tl_xbar_req;
-  logic                                 mem64_tl_xbar_gnt;
-  logic                                 mem64_tl_xbar_we;
-  logic [(top_pkg::AxiDataWidth/8)-1:0] mem64_tl_xbar_be;
-  logic [top_pkg::AxiAddrWidth-1:0]     mem64_tl_xbar_addr;
-  logic [top_pkg::AxiDataWidth-1:0]     mem64_tl_xbar_wdata;
-  logic                                 mem64_tl_xbar_rvalid;
-  logic [top_pkg::AxiDataWidth-1:0]     mem64_tl_xbar_rdata;
-
-  logic                                 mem64_tl_rom_mem_req;
-  logic                                 mem64_tl_rom_mem_gnt;
-  logic                                 mem64_tl_rom_mem_we;
-  logic [(top_pkg::AxiDataWidth/8)-1:0] mem64_tl_rom_mem_be;
-  logic [top_pkg::AxiAddrWidth-1:0]     mem64_tl_rom_mem_addr;
-  logic [top_pkg::AxiDataWidth-1:0]     mem64_tl_rom_mem_wdata;
-  logic                                 mem64_tl_rom_mem_rvalid;
-  logic [top_pkg::AxiDataWidth-1:0]     mem64_tl_rom_mem_rdata;
-
-  // 32-bit memory format signals
-  logic                       mem32_tl_xbar_req;
-  logic                       mem32_tl_xbar_gnt;
-  logic                       mem32_tl_xbar_we;
-  logic [(TlDataWidth/8)-1:0] mem32_tl_xbar_be;
-  logic [top_pkg::TL_AW-1:0]  mem32_tl_xbar_addr;
-  logic [TlDataWidth-1:0]     mem32_tl_xbar_wdata;
-  logic                       mem32_tl_xbar_rvalid;
-  logic [TlDataWidth-1:0]     mem32_tl_xbar_rdata;
-
-  logic                       mem32_tl_rom_mem_req;
-  logic                       mem32_tl_rom_mem_gnt;
-  logic                       mem32_tl_rom_mem_we;
-  logic [(TlDataWidth/8)-1:0] mem32_tl_rom_mem_be;
-  logic [top_pkg::TL_AW-1:0]  mem32_tl_rom_mem_addr;
-  logic [TlDataWidth-1:0]     mem32_tl_rom_mem_wdata;
-  logic                       mem32_tl_rom_mem_rvalid;
-  logic [TlDataWidth-1:0]     mem32_tl_rom_mem_rdata;
 
   // AXI signals
   top_pkg::axi_req_t      [xbar_cfg.NoSlvPorts-1:0] xbar_host_req;
@@ -521,87 +482,24 @@ module top_chip_system #(
     .base_addr_i ( { top_pkg::MailboxExtBaseAddr, top_pkg::MailboxBase } )
   );
 
-  // AXI to 64-bit mem for TLUL crossbar
-  axi_to_mem #(
-    .axi_req_t  ( top_pkg::axi_dev_req_t  ),
-    .axi_resp_t ( top_pkg::axi_dev_resp_t ),
-    .AddrWidth  ( top_pkg::AxiAddrWidth   ),
-    .DataWidth  ( top_pkg::AxiDataWidth   ),
-    .IdWidth    ( top_pkg::AxiDevIdWidth  ),
-    .NumBanks   ( 1                       )
-  ) u_tl_xbar_axi_to_mem (
+  // AXI to TL-UL for TL-UL crossbar
+  axi_to_tlul #(
+    .axi_req_t    ( top_pkg::axi_dev_req_t  ),
+    .axi_resp_t   ( top_pkg::axi_dev_resp_t ),
+    .AxiAddrWidth ( top_pkg::AxiAddrWidth   ),
+    .AxiDataWidth ( top_pkg::AxiDataWidth   ),
+    .AxiIdWidth   ( top_pkg::AxiDevIdWidth  )
+  ) u_xbar_axi_to_tlul (
     .clk_i  (clkmgr_clocks.clk_main_infra),
     .rst_ni (rstmgr_resets.rst_main_n[rstmgr_pkg::DomainMainSel]),
 
-    // AXI interface.
-    .busy_o     ( ),
     .axi_req_i  (xbar_device_req[top_pkg::TlCrossbar]),
     .axi_resp_o (xbar_device_resp[top_pkg::TlCrossbar]),
 
-    // Memory interface.
-    .mem_req_o    (mem64_tl_xbar_req),
-    .mem_gnt_i    (mem64_tl_xbar_gnt),
-    .mem_addr_o   (mem64_tl_xbar_addr),
-    .mem_wdata_o  (mem64_tl_xbar_wdata),
-    .mem_strb_o   (mem64_tl_xbar_be),
-    .mem_atop_o   ( ),
-    .mem_we_o     (mem64_tl_xbar_we),
-    .mem_rvalid_i (mem64_tl_xbar_rvalid),
-    .mem_rdata_i  (mem64_tl_xbar_rdata)
-  );
-
-  // 64-bit mem to 32-bit mem for TLUL crossbar
-  mem_downsizer u_tl_xbar_mem_downsizer (
-    .clk_i  (clkmgr_clocks.clk_main_infra),
-    .rst_ni (rstmgr_resets.rst_main_n[rstmgr_pkg::DomainMainSel]),
-
-    // 64-bit memory request in
-    .mem64_req_i   (mem64_tl_xbar_req),
-    .mem64_gnt_o   (mem64_tl_xbar_gnt),
-    .mem64_we_i    (mem64_tl_xbar_we),
-    .mem64_be_i    (mem64_tl_xbar_be),
-    .mem64_addr_i  (mem64_tl_xbar_addr),
-    .mem64_wdata_i (mem64_tl_xbar_wdata),
-    .mem64_rvalid_o(mem64_tl_xbar_rvalid),
-    .mem64_rdata_o (mem64_tl_xbar_rdata),
-
-    // 32-bit memory request out
-    .mem32_req_o   (mem32_tl_xbar_req),
-    .mem32_gnt_i   (mem32_tl_xbar_gnt),
-    .mem32_we_o    (mem32_tl_xbar_we),
-    .mem32_be_o    (mem32_tl_xbar_be),
-    .mem32_addr_o  (mem32_tl_xbar_addr),
-    .mem32_wdata_o (mem32_tl_xbar_wdata),
-    .mem32_rvalid_i(mem32_tl_xbar_rvalid),
-    .mem32_rdata_i (mem32_tl_xbar_rdata)
-  );
-
-  // 32-bit mem to TLUL for TLUL crossbar
-  tlul_adapter_host #(
-    .EnableDataIntgGen      ( 1 ),
-    .EnableRspDataIntgCheck ( 1 )
-  ) u_tl_xbar_tlul_host_adapter (
-    .clk_i  (clkmgr_clocks.clk_main_infra),
-    .rst_ni (rstmgr_resets.rst_main_n[rstmgr_pkg::DomainMainSel]),
-
-    .req_i        (mem32_tl_xbar_req),
-    .gnt_o        (mem32_tl_xbar_gnt),
-    .addr_i       (mem32_tl_xbar_addr),
-    .we_i         (mem32_tl_xbar_we),
-    .wdata_i      (mem32_tl_xbar_wdata),
-    .wdata_intg_i ('0),
-    .be_i         (mem32_tl_xbar_be),
     .instr_type_i (prim_mubi_pkg::MuBi4False),
-    .user_rsvd_i  ('0),
 
-    .valid_o      (mem32_tl_xbar_rvalid),
-    .rdata_o      (mem32_tl_xbar_rdata),
-    .rdata_intg_o ( ),
-    .err_o        ( ),
-    .intg_err_o   ( ),
-
-    .tl_o         (tl_axi_xbar_h2d),
-    .tl_i         (tl_axi_xbar_d2h)
+    .tl_o (tl_axi_xbar_h2d),
+    .tl_i (tl_axi_xbar_d2h)
   );
 
   // TileLink peripheral crossbar
@@ -1206,87 +1104,24 @@ module top_chip_system #(
   // Isolate the ROM unless the ROM checker signals 'good' via pwrmgr.
   assign rom_mem_isolate = lc_ctrl_pkg::lc_tx_test_false_loose(pwrmgr_fetch_en);
 
-  // AXI to 64-bit mem for TLUL ROM
-  axi_to_mem #(
-    .axi_req_t  ( top_pkg::axi_dev_req_t  ),
-    .axi_resp_t ( top_pkg::axi_dev_resp_t ),
-    .AddrWidth  ( top_pkg::AxiAddrWidth   ),
-    .DataWidth  ( top_pkg::AxiDataWidth   ),
-    .IdWidth    ( top_pkg::AxiDevIdWidth  ),
-    .NumBanks   ( 1                       )
-  ) u_tl_rom_axi_to_mem (
-    .clk_i      (clkmgr_clocks.clk_main_infra),
-    .rst_ni     (rstmgr_resets.rst_main_n[rstmgr_pkg::DomainMainSel]),
+  // AXI to TL-UL for ROM
+  axi_to_tlul #(
+    .axi_req_t    ( top_pkg::axi_dev_req_t  ),
+    .axi_resp_t   ( top_pkg::axi_dev_resp_t ),
+    .AxiAddrWidth ( top_pkg::AxiAddrWidth   ),
+    .AxiDataWidth ( top_pkg::AxiDataWidth   ),
+    .AxiIdWidth   ( top_pkg::AxiDevIdWidth  )
+  ) u_rom_axi_to_tlul (
+    .clk_i  (clkmgr_clocks.clk_main_infra),
+    .rst_ni (rstmgr_resets.rst_main_n[rstmgr_pkg::DomainMainSel]),
 
-    // AXI interface.
-    .busy_o     ( ),
     .axi_req_i  (rom_mem_isolated_req),
     .axi_resp_o (rom_mem_isolated_resp),
 
-    // Memory interface.
-    .mem_req_o    (mem64_tl_rom_mem_req),
-    .mem_gnt_i    (mem64_tl_rom_mem_gnt),
-    .mem_addr_o   (mem64_tl_rom_mem_addr),
-    .mem_wdata_o  (mem64_tl_rom_mem_wdata),
-    .mem_strb_o   (mem64_tl_rom_mem_be),
-    .mem_atop_o   ( ),
-    .mem_we_o     (mem64_tl_rom_mem_we),
-    .mem_rvalid_i (mem64_tl_rom_mem_rvalid),
-    .mem_rdata_i  (mem64_tl_rom_mem_rdata)
-  );
-
-  // 64-bit mem to 32-bit mem for TLUL ROM
-  mem_downsizer u_tl_rom_mem_downsizer (
-    .clk_i      (clkmgr_clocks.clk_main_infra),
-    .rst_ni     (rstmgr_resets.rst_main_n[rstmgr_pkg::DomainMainSel]),
-
-    // 64-bit memory request in
-    .mem64_req_i    (mem64_tl_rom_mem_req),
-    .mem64_gnt_o    (mem64_tl_rom_mem_gnt),
-    .mem64_we_i     (mem64_tl_rom_mem_we),
-    .mem64_be_i     (mem64_tl_rom_mem_be),
-    .mem64_addr_i   (mem64_tl_rom_mem_addr),
-    .mem64_wdata_i  (mem64_tl_rom_mem_wdata),
-    .mem64_rvalid_o (mem64_tl_rom_mem_rvalid),
-    .mem64_rdata_o  (mem64_tl_rom_mem_rdata),
-
-    // 32-bit memory request out
-    .mem32_req_o    (mem32_tl_rom_mem_req),
-    .mem32_gnt_i    (mem32_tl_rom_mem_gnt),
-    .mem32_we_o     (mem32_tl_rom_mem_we),
-    .mem32_be_o     (mem32_tl_rom_mem_be),
-    .mem32_addr_o   (mem32_tl_rom_mem_addr),
-    .mem32_wdata_o  (mem32_tl_rom_mem_wdata),
-    .mem32_rvalid_i (mem32_tl_rom_mem_rvalid),
-    .mem32_rdata_i  (mem32_tl_rom_mem_rdata)
-  );
-
-  // 32-bit mem to TLUL for TLUL ROM
-  tlul_adapter_host #(
-    .EnableDataIntgGen      ( 1 ),
-    .EnableRspDataIntgCheck ( 1 )
-  ) u_tl_rom_tlul_host_adapter (
-    .clk_i      (clkmgr_clocks.clk_main_infra),
-    .rst_ni     (rstmgr_resets.rst_main_n[rstmgr_pkg::DomainMainSel]),
-
-    .req_i        (mem32_tl_rom_mem_req),
-    .gnt_o        (mem32_tl_rom_mem_gnt),
-    .addr_i       (mem32_tl_rom_mem_addr),
-    .we_i         (mem32_tl_rom_mem_we),
-    .wdata_i      (mem32_tl_rom_mem_wdata),
-    .wdata_intg_i ('0),
-    .be_i         (mem32_tl_rom_mem_be),
     .instr_type_i (prim_mubi_pkg::MuBi4True),
-    .user_rsvd_i  ('0),
 
-    .valid_o      (mem32_tl_rom_mem_rvalid),
-    .rdata_o      (mem32_tl_rom_mem_rdata),
-    .rdata_intg_o ( ),
-    .err_o        ( ),
-    .intg_err_o   ( ),
-
-    .tl_o         (tl_rom_ctrl_mem_h2d),
-    .tl_i         (tl_rom_ctrl_mem_d2h)
+    .tl_o (tl_rom_ctrl_mem_h2d),
+    .tl_i (tl_rom_ctrl_mem_d2h)
   );
 
   rom_ctrl # (

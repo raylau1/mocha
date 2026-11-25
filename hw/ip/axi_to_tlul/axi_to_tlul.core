@@ -1,0 +1,24 @@
+CAPI=2:
+# Copyright lowRISC and contributors (COSMIC project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+name: "lowrisc:mocha:axi_to_tlul"
+description: "AXI to TL-UL conversion block for Mocha"
+
+filesets:
+  files_rtl:
+    depend:
+      - lowrisc:mocha_constants:top_pkg
+      - lowrisc:prim:mubi
+      - lowrisc:tlul:adapter_host
+      - pulp-platform.org::axi
+    files:
+      - rtl/mem_downsizer.sv
+      - rtl/axi_to_tlul.sv
+    file_type: systemVerilogSource
+
+targets:
+  default:
+    filesets:
+      - files_rtl

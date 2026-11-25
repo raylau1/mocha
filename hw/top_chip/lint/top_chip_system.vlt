@@ -144,7 +144,7 @@ lint_off -rule UNOPTFLAT -file "*/lowrisc_ip_kmac*/rtl/kmac_app.sv" -match "*app
 lint_off -rule UNOPTFLAT -file "*/lowrisc_ip_kmac*/rtl/kmac_app.sv" -match "*fsm_data_ready*"
 
 // Memory downsizer truncates address bits
-lint_off -rule UNUSEDSIGNAL -file "*/lowrisc_mocha_top_chip_system*/rtl/mem_downsizer.sv" -match "*mem64_addr_i*"
+lint_off -rule UNUSEDSIGNAL -file "*/lowrisc_mocha_axi_to_tlul*/rtl/mem_downsizer.sv" -match "*mem64_addr_i*"
 
 // Mute RTL style warning from tag controller and its dependencies
 lint_off -rule DECLFILENAME -file "*/lowrisc_common_cells_all*/rtl/cb_filter.sv" -match "*module hash_block*"

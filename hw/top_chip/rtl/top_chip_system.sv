@@ -84,7 +84,10 @@ module top_chip_system #(
   input  logic dm_jtag_trst_n,
 
   // Testing controls
-  input  logic debug_en_i
+  input  logic debug_en_i,
+
+  // Exposed encryption key from key interface
+  output logic [key_interface_pkg::KeyWidth-1:0] key_o
 );
 
   // Local parameters.
@@ -153,14 +156,15 @@ module top_chip_system #(
   // AXI crossbar address mapping
   axi_pkg::xbar_rule_64_t [xbar_cfg.NoAddrRules-1:0] addr_map;
   assign addr_map = '{
-    '{ idx: top_pkg::RomCtrlMem, start_addr: top_pkg::RomCtrlMemBase, end_addr: top_pkg::RomCtrlMemBase + top_pkg::RomCtrlMemLength },
-    '{ idx: top_pkg::SRAM,       start_addr: top_pkg::SRAMBase,       end_addr: top_pkg::SRAMBase       + top_pkg::SRAMLength       },
-    '{ idx: top_pkg::DM_DEV,     start_addr: top_pkg::DebugMemBase,   end_addr: top_pkg::DebugMemBase   + top_pkg::DebugMemLength   },
-    '{ idx: top_pkg::Mailbox,    start_addr: top_pkg::MailboxBase,    end_addr: top_pkg::MailboxBase    + top_pkg::MailboxLength    },
-    '{ idx: top_pkg::SwDvWindow, start_addr: top_pkg::SwDvWindowBase, end_addr: top_pkg::SwDvWindowBase + top_pkg::SwDvWindowLength },
-    '{ idx: top_pkg::RestOfChip, start_addr: top_pkg::RestOfChipBase, end_addr: top_pkg::RestOfChipBase + top_pkg::RestOfChipLength },
-    '{ idx: top_pkg::TlCrossbar, start_addr: top_pkg::TlCrossbarBase, end_addr: top_pkg::TlCrossbarBase + top_pkg::TlCrossbarLength },
-    '{ idx: top_pkg::DRAM,       start_addr: top_pkg::DRAMBase,       end_addr: top_pkg::DRAMBase       + top_pkg::DRAMUsableLength }
+    '{ idx: top_pkg::RomCtrlMem,   start_addr: top_pkg::RomCtrlMemBase,   end_addr: top_pkg::RomCtrlMemBase   + top_pkg::RomCtrlMemLength   },
+    '{ idx: top_pkg::SRAM,         start_addr: top_pkg::SRAMBase,         end_addr: top_pkg::SRAMBase         + top_pkg::SRAMLength         },
+    '{ idx: top_pkg::DM_DEV,       start_addr: top_pkg::DebugMemBase,     end_addr: top_pkg::DebugMemBase     + top_pkg::DebugMemLength     },
+    '{ idx: top_pkg::Mailbox,      start_addr: top_pkg::MailboxBase,      end_addr: top_pkg::MailboxBase      + top_pkg::MailboxLength      },
+    '{ idx: top_pkg::SwDvWindow,   start_addr: top_pkg::SwDvWindowBase,   end_addr: top_pkg::SwDvWindowBase   + top_pkg::SwDvWindowLength   },
+    '{ idx: top_pkg::KeyInterface, start_addr: top_pkg::KeyInterfaceBase, end_addr: top_pkg::KeyInterfaceBase + top_pkg::KeyInterfaceLength },
+    '{ idx: top_pkg::RestOfChip,   start_addr: top_pkg::RestOfChipBase,   end_addr: top_pkg::RestOfChipBase   + top_pkg::RestOfChipLength   },
+    '{ idx: top_pkg::TlCrossbar,   start_addr: top_pkg::TlCrossbarBase,   end_addr: top_pkg::TlCrossbarBase   + top_pkg::TlCrossbarLength   },
+    '{ idx: top_pkg::DRAM,         start_addr: top_pkg::DRAMBase,         end_addr: top_pkg::DRAMBase         + top_pkg::DRAMUsableLength   }
   };
 
   // TileLink signals.
@@ -480,6 +484,23 @@ module top_chip_system #(
     .slv_resps_o ( { mailbox_ext_resp,  mailbox_main_resp } ),
     .irq_o       ( { mailbox_ext_irq_o, mailbox_main_irq  } ),
     .base_addr_i ( { top_pkg::MailboxExtBaseAddr, top_pkg::MailboxBase } )
+  );
+
+  // Key interface
+  key_interface #(
+    .axi_req_t    ( top_pkg::axi_dev_req_t  ),
+    .axi_resp_t   ( top_pkg::axi_dev_resp_t ),
+    .AxiAddrWidth ( top_pkg::AxiAddrWidth   ),
+    .AxiDataWidth ( top_pkg::AxiDataWidth   ),
+    .AxiIdWidth   ( top_pkg::AxiDevIdWidth  )
+  ) u_key_interface (
+    .clk_i  (clkmgr_clocks.clk_main_infra),
+    .rst_ni (rstmgr_resets.rst_main_n[rstmgr_pkg::DomainMainSel]),
+
+    .axi_req_i  (xbar_device_req[top_pkg::KeyInterface]),
+    .axi_resp_o (xbar_device_resp[top_pkg::KeyInterface]),
+
+    .key_o (key_o)
   );
 
   // AXI to TL-UL for TL-UL crossbar

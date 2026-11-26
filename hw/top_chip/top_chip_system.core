@@ -25,6 +25,7 @@ filesets:
       - lowrisc:mocha:axi_sram
       - lowrisc:mocha:axi_to_tlul
       - lowrisc:mocha:riscv_debug_module
+      - lowrisc:mocha:key_interface
       - lowrisc:prim:onehot
       - lowrisc:tlul:adapter_reg
       - lowrisc:mocha_constants:top_racl_pkg

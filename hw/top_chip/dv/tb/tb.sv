@@ -214,7 +214,9 @@ module tb;
     .dm_jtag_tdo          (                 ),
     .dm_jtag_trst_n       (1'b0             ),
     // Testing control.
-    .debug_en_i           (1'b1             )
+    .debug_en_i           (1'b1             ),
+    // Exposed encryption key.
+    .key_o                (                 )
   );
 
   // Assignment to the GPIO pads. If dut_gpio_en_o[i] is disabled, then let the gpio_pad[i] float so

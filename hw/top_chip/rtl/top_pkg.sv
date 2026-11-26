@@ -33,7 +33,7 @@ package top_pkg;
 
   // Mocha AXI crossbar parameters
   localparam int AxiXbarHosts   = 2;
-  localparam int AxiXbarDevices = 8;
+  localparam int AxiXbarDevices = 9;
 
   // Mocha AXI crossbar hosts and devices
   typedef enum int unsigned {
@@ -42,27 +42,29 @@ package top_pkg;
   } axi_hosts_t;
 
   typedef enum int unsigned {
-    RomCtrlMem = 0,
-    SRAM       = 1,
-    DM_DEV     = 2,
-    Mailbox    = 3,
-    SwDvWindow = 4,
-    RestOfChip = 5,
-    TlCrossbar = 6,
-    DRAM       = 7
+    RomCtrlMem   = 0,
+    SRAM         = 1,
+    DM_DEV       = 2,
+    Mailbox      = 3,
+    SwDvWindow   = 4,
+    KeyInterface = 5,
+    RestOfChip   = 6,
+    TlCrossbar   = 7,
+    DRAM         = 8
   } axi_devices_t;
 
   parameter int unsigned DebugMemBase32 = 32'h2000_0000;
 
   typedef enum longint unsigned {
-    RomCtrlMemBase = 64'h0008_0000,
-    SRAMBase       = 64'h1000_0000,
-    DebugMemBase   = {32'h0, DebugMemBase32},
-    MailboxBase    = 64'h2001_0000,
-    SwDvWindowBase = 64'h2002_0000,
-    RestOfChipBase = 64'h3000_0000,
-    TlCrossbarBase = 64'h4000_0000,
-    DRAMBase       = 64'h8000_0000
+    RomCtrlMemBase   = 64'h0008_0000,
+    SRAMBase         = 64'h1000_0000,
+    DebugMemBase     = {32'h0, DebugMemBase32},
+    MailboxBase      = 64'h2001_0000,
+    SwDvWindowBase   = 64'h2002_0000,
+    KeyInterfaceBase = 64'h2003_0000,
+    RestOfChipBase   = 64'h3000_0000,
+    TlCrossbarBase   = 64'h4000_0000,
+    DRAMBase         = 64'h8000_0000
   } axi_addr_start_t;
 
   // Memory lengths
@@ -71,6 +73,7 @@ package top_pkg;
   localparam longint unsigned DebugMemLength     = 64'h0000_1000;
   localparam longint unsigned MailboxLength      = 64'h0001_0000;
   localparam longint unsigned SwDvWindowLength   = 64'h0000_0100;
+  localparam longint unsigned KeyInterfaceLength = 64'h0000_0020;
   localparam longint unsigned RestOfChipLength   = 64'h0000_8000;
   localparam longint unsigned TlCrossbarLength   = 64'h1000_0000;
   localparam longint unsigned DRAMPhysicalLength = 64'h4000_0000;

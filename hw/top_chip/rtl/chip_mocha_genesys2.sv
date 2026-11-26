@@ -334,7 +334,10 @@ module chip_mocha_genesys2 #(
     .dm_jtag_trst_n (jtag_trst_n & rst_n_sync_assert_50m),
 
     // Testing control
-    .debug_en_i (1'b1)
+    .debug_en_i (1'b1),
+
+    // Exposed encryption key
+    .key_o ( )
   );
 
   // GPIO tri-state output drivers
